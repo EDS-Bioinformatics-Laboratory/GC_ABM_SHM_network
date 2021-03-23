@@ -201,7 +201,7 @@ void Werte::inialld() {
 
    // Timescales in h
    tmin = 0.;
-   tmax = 504.;
+   tmax = 504.;  //Temporary504
    // Start Mutation
    Start_Mutation = 72.;
    Start_Differentiation = 72.;

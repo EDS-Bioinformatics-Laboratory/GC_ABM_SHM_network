@@ -25,8 +25,16 @@ using namespace std;
 
 std::map<std::string, std::vector<float>> Seq_affinity;
 std::map<std::string, std::map<std::string, std::map<int, std::map<std::string, std::string>>>> Restricted_db;
+std::map<std::vector<std::string>, std::vector<float>> CDRs_affinity;
+std::map<std::vector<std::string>, std::string> FWRs_db;
 
-void confirmBCR(vector<float> &BCReceptor, std::string sequence) {
+static std::mt19937 generator(global_seed+3);
+static std::mt19937 generator2(global_seed +1532);
+std::default_random_engine generator_fasta(global_seed +1);
+static std::mt19937 gen(global_seed +2);
+
+
+void confirmBCR(vector<float> &BCReceptor, std::string sequence, std::map<std::string, std::string> AA_REGIONS, int mother_ID, int cell_ID) {
 
     char filename[ ] = "bcinflow09/Sequence_db.csv";
     fstream database;
@@ -35,6 +43,15 @@ void confirmBCR(vector<float> &BCReceptor, std::string sequence) {
     char filename_restricted[ ] = "bcinflow09/Restricted_db.csv";
     fstream database_restricted;
     std::ifstream database2_restricted ("bcinflow09/Restricted_db.csv");
+
+    char filename_CDRs[ ] = "bcinflow09/CDRs_db.csv";
+    fstream database_CDRs;
+    std::ifstream database2_CDRs ("bcinflow09/CDRs_db.csv");
+
+    char filename_FWRs[ ] = "bcinflow09/FWRs_db.csv";
+    fstream database_FWRs;
+    std::ifstream database2_FWRs ("bcinflow09/FWRs_db.csv");
+
          if (Seq_affinity.size() == 0) {
 
              database.open(filename,fstream::app);
@@ -62,10 +79,31 @@ void confirmBCR(vector<float> &BCReceptor, std::string sequence) {
                database_restricted.close();
 
 
+               database_CDRs.open(filename_CDRs,fstream::app);
+                // If file does not exist, Create new file
+                if (!database_CDRs )
+                {
+                  cout << "Cannot open file, file does not exist. Creating new file.." << endl;
+                  database_CDRs.close();
+                  database_CDRs.open(filename_CDRs,  fstream::out);
+                  //database.close();
+
+                }
+                database_CDRs.close();
 
 
-              std::string roll2;
-              int count = 0;
+                database_FWRs.open(filename_FWRs,fstream::app);
+                 // If file does not exist, Create new file
+                 if (!database_FWRs )
+                 {
+                   cout << "Cannot open file, file does not exist. Creating new file.." << endl;
+                   database_FWRs.close();
+                   database_FWRs.open(filename_FWRs,  fstream::out);
+                   //database.close();
+
+                 }
+                 database_FWRs.close();
+
               int iy = 0;
               vector<string> row;
               string line, word, temp;
@@ -105,6 +143,7 @@ void confirmBCR(vector<float> &BCReceptor, std::string sequence) {
               }
 
 
+
               int iy_restricted = 0;
               vector<string> row_restricted;
               string line_restricted, word_restricted, temp_restricted;
@@ -142,20 +181,141 @@ void confirmBCR(vector<float> &BCReceptor, std::string sequence) {
                   }
                   database2_restricted.close();
               }
+
+
+              vector<string> row_CDR;
+              string lineCDR, wordCDR;
+              if (database2_CDRs.is_open())
+              {
+                while (database2_CDRs.good()) {
+                    row_CDR.clear();
+                    if (getline(database2_CDRs, lineCDR, '\n' )) //test the read for success
+                        {
+                           if (lineCDR.length() != 0) {
+                               istringstream sCDR(lineCDR);
+
+                               while (std::getline(sCDR, wordCDR, ',')) {
+
+                                   row_CDR.push_back(wordCDR);
+                               }
+                               CDRs_affinity[{row_CDR[0], row_CDR[1],row_CDR[2]}] = {std::stof(row_CDR[3]), std::stof(row_CDR[4]), std::stof(row_CDR[5]),std::stof(row_CDR[6])};
+                            }
+                          else
+                            {
+                                cout << "failed to read file" << endl;
+                            }
+
+                    }
+
+                }
+                database2_CDRs.close();
+              }
+
+             vector<string> row_FWR;
+             string lineFWR, wordFWR;
+             if (database2_FWRs.is_open())
+             {
+               while (database2_FWRs.good()) {
+                   row_FWR.clear();
+                   if (getline(database2_FWRs, lineFWR, '\n' )) //test the read for success
+                       {
+                          if (lineFWR.length() != 0) {
+
+                              istringstream sFWR(lineFWR);
+
+                              while (std::getline(sFWR, wordFWR, ',')) {
+
+                                  row_FWR.push_back(wordFWR);
+                              }
+                              if (row_FWR[1]!= "") {
+                                  FWRs_db[{row_FWR[0], row_FWR[1]}] = row_FWR[2];
+                              } else {
+                                  //cout << lineFWR <<endl;
+                              }
+
+                           }
+                         else
+                           {
+                               cout << "failed to read file" << endl;
+                           }
+
+                   }
+
+               }
+               database2_FWRs.close();
+             }
          }
 
          vector<float> results;
+
+
+
+
          if (Seq_affinity.find(sequence)!= Seq_affinity.end()) {
              results=Seq_affinity.find(sequence)->second;
              BCReceptor[0]=results[0];
              BCReceptor[1]=results[1];
              BCReceptor[2]=results[2];
              BCReceptor[3]=results[3];
-         } else {
+             if(mother_ID==-1) {
+
+                 if (FWRs_db.find({"FWR1", AA_REGIONS["FWR1"]})== FWRs_db.end() ) {
+                    FWRs_db[{"FWR1", AA_REGIONS["FWR1"]}]="N";
+                 }
+                 if (FWRs_db.find({"FWR2", AA_REGIONS["FWR2"]})== FWRs_db.end() ) {
+                    FWRs_db[{"FWR2", AA_REGIONS["FWR2"]}]="N";
+                 }
+                 if (FWRs_db.find({"FWR3", AA_REGIONS["FWR3"]})== FWRs_db.end() ) {
+                    FWRs_db[{"FWR3", AA_REGIONS["FWR3"]}]="N";
+                 }
+                 if (FWRs_db.find({"FWR4", AA_REGIONS["FWR4"]})== FWRs_db.end() ) {
+                    FWRs_db[{"FWR4", AA_REGIONS["FWR4"]}]="N";
+                 }
+                 if (CDRs_affinity.find({AA_REGIONS["CDR1"],AA_REGIONS["CDR2"],AA_REGIONS["CDR3"]}) == CDRs_affinity.end() && FWRs_db[{"FWR1", AA_REGIONS["FWR1"]}]=="N" && FWRs_db[{"FWR2", AA_REGIONS["FWR2"]}]=="N" && FWRs_db[{"FWR3", AA_REGIONS["FWR3"]}]=="N" && FWRs_db[{"FWR4", AA_REGIONS["FWR4"]}]=="N") {
+                        CDRs_affinity[{AA_REGIONS["CDR1"],AA_REGIONS["CDR2"],AA_REGIONS["CDR3"]}] =  {BCReceptor[0],BCReceptor[1],BCReceptor[2],BCReceptor[3]};
+                 }
+
+                 if (CDRs_affinity.find({AA_REGIONS["CDR1"],AA_REGIONS["CDR2"],AA_REGIONS["CDR3"]}) != CDRs_affinity.end() && FWRs_db[{"FWR1", AA_REGIONS["FWR1"]}]=="N" && FWRs_db[{"FWR2", AA_REGIONS["FWR2"]}]=="N" && FWRs_db[{"FWR3", AA_REGIONS["FWR3"]}]=="N" && FWRs_db[{"FWR4", AA_REGIONS["FWR4"]}]=="N") {
+                        if(BCReceptor[0]!=CDRs_affinity[{AA_REGIONS["CDR1"],AA_REGIONS["CDR2"],AA_REGIONS["CDR3"]}][0] ||
+                        BCReceptor[1]!=CDRs_affinity[{AA_REGIONS["CDR1"],AA_REGIONS["CDR2"],AA_REGIONS["CDR3"]}][1] ||
+                        BCReceptor[2]!=CDRs_affinity[{AA_REGIONS["CDR1"],AA_REGIONS["CDR2"],AA_REGIONS["CDR3"]}][2] ||
+                        BCReceptor[3]!=CDRs_affinity[{AA_REGIONS["CDR1"],AA_REGIONS["CDR2"],AA_REGIONS["CDR3"]}][3]){
+                            cout<<"Same CDRs, different affinity! Check CDRs "<<AA_REGIONS["CDR1"]<<" "<<AA_REGIONS["CDR2"]<<" "<<AA_REGIONS["CDR3"]<<endl;
+                        }
+                  }
+             }
+
+         } else if (CDRs_affinity.find({AA_REGIONS["CDR1"],AA_REGIONS["CDR2"],AA_REGIONS["CDR3"]}) != CDRs_affinity.end() && FWRs_db[{"FWR1", AA_REGIONS["FWR1"]}]=="N" && FWRs_db[{"FWR2", AA_REGIONS["FWR2"]}]=="N" && FWRs_db[{"FWR3", AA_REGIONS["FWR3"]}]=="N"  && FWRs_db[{"FWR4", AA_REGIONS["FWR4"]}]=="N"){
+             //cout<<"CDR_aff"<<endl;
+             results=CDRs_affinity.find({AA_REGIONS["CDR1"],AA_REGIONS["CDR2"],AA_REGIONS["CDR3"]})->second;
+             BCReceptor[0]=results[0];
+             BCReceptor[1]=results[1];
+             BCReceptor[2]=results[2];
+             BCReceptor[3]=results[3];
              Seq_affinity[sequence] = {BCReceptor[0],BCReceptor[1],BCReceptor[2],BCReceptor[3]};
+
+             if(mother_ID==-1) {
+                 cout<<"Founder cell " << cell_ID << "not found in Seq db" <<endl;
+             }
+         } else {
+             //cout<<"Strangely last"<<endl;
+
+             if(FWRs_db[{"FWR1", AA_REGIONS["FWR1"]}]=="L" || FWRs_db[{"FWR2", AA_REGIONS["FWR2"]}]=="L" || FWRs_db[{"FWR3", AA_REGIONS["FWR3"]}]=="L" || FWRs_db[{"FWR4", AA_REGIONS["FWR4"]}]=="L" ){
+                  //cout<<"Lethal"<<endl;
+                  Seq_affinity[sequence] = {9,9,9,9};
+
+              } else {
+                  Seq_affinity[sequence] = {BCReceptor[0],BCReceptor[1],BCReceptor[2],BCReceptor[3]};
+              }
+             if(mother_ID==-1) {
+                 cout<<"Founder cell " << cell_ID << "not found in Seq db" <<endl;
+             }
          }
 
-
+         if (CDRs_affinity.find({AA_REGIONS["CDR1"],AA_REGIONS["CDR2"],AA_REGIONS["CDR3"]}) == CDRs_affinity.end() && FWRs_db[{"FWR1", AA_REGIONS["FWR1"]}]=="N" && FWRs_db[{"FWR2", AA_REGIONS["FWR2"]}]=="N" && FWRs_db[{"FWR3", AA_REGIONS["FWR3"]}]=="N" && FWRs_db[{"FWR4", AA_REGIONS["FWR4"]}]=="N") {
+             //cout<<"Added to CDRs_aff"<<endl;
+                CDRs_affinity[{AA_REGIONS["CDR1"],AA_REGIONS["CDR2"],AA_REGIONS["CDR3"]}] =  {BCReceptor[0],BCReceptor[1],BCReceptor[2],BCReceptor[3]};
+         }
 
 
 
@@ -279,14 +439,14 @@ void getSequence(std::map<std::string, std::string> & REGIONS, std::map<std::str
 
     do {
         if (fastas.size () == 0) {
-             findFastas(path);
+             findFastas(fasta_path);
         }
         if (fastas_remaining.size() == 0) {
             fastas_remaining=fastas;
             std::random_device rd;
-            std::default_random_engine generator(rd());
+
             static auto rng = std::default_random_engine {};
-            std::shuffle(std::begin(fastas_remaining), std::end(fastas_remaining), generator);
+            std::shuffle(std::begin(fastas_remaining), std::end(fastas_remaining), generator_fasta);
         }
 
         std::string input = fastas_remaining.back();
@@ -579,7 +739,9 @@ std::map<std::string, std::string> Separating(std::map<std::string, vector<int>>
     AA_REGIONS["CDR3"]=protein_sequence.substr(FWR1+CDR1+FWR2+CDR2+FWR3,CDR3);
     AA_REGIONS["FWR4"]=protein_sequence.substr(FWR1+CDR1+FWR2+CDR2+FWR3+CDR3,FWR4);
 
-
+    if((AA_REGIONS["FWR1"] + AA_REGIONS["CDR1"]+ AA_REGIONS["FWR2"] +AA_REGIONS["CDR2"] +AA_REGIONS["FWR3"] + AA_REGIONS["CDR3"] + AA_REGIONS["FWR4"]) != protein_sequence) {
+        std::cout<<"Strangely " << AA_REGIONS["FWR1"] + AA_REGIONS["CDR1"]+ AA_REGIONS["FWR2"] +AA_REGIONS["CDR2"] +AA_REGIONS["FWR3"] + AA_REGIONS["CDR3"] + AA_REGIONS["FWR4"] << "not the same as "<< protein_sequence << std::endl;
+    }
     return AA_REGIONS;
 }
 
@@ -672,7 +834,7 @@ bool isThereAnStop (std::string sequence) {
 std::vector<int> whichCellsToMutate(int new_n_cells, double lambda) {
     std::vector<int> p;
     static std::random_device rd;
-    static std::mt19937 gen(rd());
+
 
     std::poisson_distribution<int> pd(lambda);
 
@@ -690,7 +852,7 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
     std::vector<string> regions= {"FWR1","CDR1","FWR2","CDR2","FWR3","CDR3","FWR4"};
 
     std::random_device gen;
-    static std::mt19937 generator(gen());
+
     std::uniform_real_distribution<double> distribution(0.0,std::nextafter(1.0, std::numeric_limits<double>::max()));
 
 
@@ -707,7 +869,7 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
     std::string mutatedSeq;
     int mutationPlace;
     std::random_device gen2;
-    static std::mt19937 generator2(gen2());
+
     std::uniform_int_distribution<int> point(0,1);
     std::map<std::string, std::string> REGIONS_TMP= REGIONS;
     int prueba = 0;
@@ -719,7 +881,9 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
     std::map<std::string, std::string> AA_REGIONS;
     int MutationPlace;
     string AA;
+    //cout << "Num of mutations: " << num_of_mutations;
     for (int i = 0; i < num_of_mutations; ++i){
+
         Replacement = false;
         Lethal=false;
             if (distribution(generator) <= RATES_OF_MUTATIONS["alpha_FWR"] && !Lethal) {
@@ -780,6 +944,7 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
             REGIONS_TMP= REGIONS;
             Keep_searching=true;
             if (Replacement && !Lethal) { ////////|| (reg == 1 || reg == 3 || reg == 5), tener en cuenta que puede haber stops en los CDR... y ver que se esta adicionando a restricted db neutral
+                //cout << "R no L "  << regions[reg] << endl;
                 point=std::uniform_int_distribution<int>(0,REGIONS[regions[reg]].length()-1);
                 mutationPlace = point(generator2);
                 originalSeq=REGIONS["FWR1"] +REGIONS["CDR1"] +REGIONS["FWR2"] +REGIONS["CDR2"] +REGIONS["FWR3"]  +REGIONS["CDR3"] +REGIONS["FWR4"];
@@ -793,9 +958,10 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                         //std::cout << "mutacion previa en" << mutationPlace << std::endl;
                         mutationPlace = point(generator2);
                         prueba=0;
-                        REGIONS_TMP= REGIONS;
+
                         //std::cout << "cambio mutacion a " << mutationPlace << std::endl;
                     }
+                    REGIONS_TMP= REGIONS;
                     prueba++;
                     //clock_gettime(CLOCK_MONOTONIC, &ts);
 
@@ -810,15 +976,16 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                       AA_REGIONS_TMP= Separating(MUTATIONS, DNAtoprotein(mutatedSeq));
                       AA_REGIONS= Separating(MUTATIONS, originalSeqAA);
 
-                      if(DNAtoprotein(mutatedSeq).compare(originalSeqAA)!= 0) {
+                      if(AA_REGIONS_TMP[regions[reg]].compare(AA_REGIONS[regions[reg]])!= 0) {
                           if (std::find(regiones_F.begin(), regiones_F.end(), regions[reg]) != regiones_F.end()) {
 
-
                               int confirmar=0;
+                              int position_AA;
                               for (unsigned li = 0; li < AA_REGIONS[regions[reg]].size(); li++ ) {
                                   if (AA_REGIONS[regions[reg]][li] != AA_REGIONS_TMP[regions[reg]][li]) {
                                       MutationPlace=li;
-                                      AA=string(1,AA_REGIONS[regions[reg]][li]);
+                                      AA=AA_REGIONS_TMP[regions[reg]][li];
+                                      position_AA=li;
                                       confirmar++;
                                   }
                               }
@@ -826,24 +993,87 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                               if (confirmar > 1) {
                               cout << "Shady" << endl;
 
+                              } else if (confirmar == 0) {
+                                  cout << "Shady 2" << endl;
+
                               }
 
                               if ( Restricted_db[sequence_name][regions[reg]][MutationPlace].find(AA) != Restricted_db[sequence_name][regions[reg]][MutationPlace].end() ) {
                                   if (Restricted_db[sequence_name][regions[reg]][MutationPlace][AA].compare("Lethal") != 0) {
+
+                                              if (FWRs_db.find({regions[reg], AA_REGIONS_TMP[regions[reg]]})!= FWRs_db.end() ) {
+                                                  if (FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}].compare("N")!= 0 && FWRs_db[{regions[reg], AA_REGIONS[regions[reg]]}].compare("N")== 0 && num_of_mutations == 1) {
+                                                      cout << "Error with FWRS! 3 "  << regions[reg] << " " << AA_REGIONS_TMP[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] << " " << AA_REGIONS[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS[regions[reg]]}] << endl;
+                                                  }
+
+                                              } else { /////Y si es R no L en una zona L de un FWR?
+                                                  if (FWRs_db[{regions[reg], AA_REGIONS[regions[reg]]}].compare("N")==0) {
+                                                      FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="N";
+                                                  } else {
+                                                      int num_L=0;
+                                                      string AA_mother;
+                                                      for (unsigned li = 0; li < AA_REGIONS[regions[reg]].size(); li++ ) {
+                                                          AA_mother=AA_REGIONS[regions[reg]][li];
+                                                          if (Restricted_db[sequence_name][regions[reg]][li][AA_mother].compare("Lethal") == 0) {
+                                                              num_L++;
+                                                          }
+                                                      }
+                                                      AA_mother=AA_REGIONS[regions[reg]][position_AA];
+                                                      if (num_L==1 && Restricted_db[sequence_name][regions[reg]][position_AA][AA_mother].compare("Lethal") == 0){
+                                                          FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="N";
+                                                      } else {
+                                                          FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="L";
+                                                      }
+
+                                                  }
+
+                                              }
                                               Restricted_is_OK=true;
 
-                                      } else {
+                                  } else {
                                       Restricted_is_OK=false;
 
-                              }
+                                  }
                               } else {
                                   if(AA.compare(".")!= 0){
+                                      if (FWRs_db.find({regions[reg], AA_REGIONS_TMP[regions[reg]]})!= FWRs_db.end() ) {
+                                          if (FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}].compare("N")!= 0) {
+                                              cout << "Error with FWRS! 2 " << regions[reg] << " " << AA_REGIONS_TMP[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] << endl;
+                                          }
+                                      } else { /////Y si es R no L en una zona L de un FWR?
+                                          if (FWRs_db[{regions[reg], AA_REGIONS[regions[reg]]}].compare("N")==0) {
+                                              FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="N";
+                                          } else {
+                                              int num_L=0;
+                                              string AA_mother;
+                                              for (unsigned li = 0; li < AA_REGIONS[regions[reg]].size(); li++ ) {
+                                                  AA_mother=AA_REGIONS[regions[reg]][li];
+                                                  if (Restricted_db[sequence_name][regions[reg]][li][AA_mother].compare("Lethal") == 0) {
+                                                      num_L++;
+                                                  }
+                                              }
+                                              AA_mother=AA_REGIONS[regions[reg]][position_AA];
+                                              if (num_L==1 && Restricted_db[sequence_name][regions[reg]][position_AA][AA_mother].compare("Lethal") == 0){
+                                                  FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="N";
+                                              } else {
+                                                  FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="L";
+                                              }
+
+                                          }
+                                      }
                                       Restricted_db[sequence_name][regions[reg]][MutationPlace][AA]= "Neutral";
                                       Restricted_is_OK=true;
                                       if (Restricted_db[sequence_name][regions[reg]][MutationPlace][AA].compare("")==0) {
                                           cout << "FALLO2"<<endl;
                                       }
                                   } else {
+                                      if (FWRs_db.find({regions[reg], AA_REGIONS_TMP[regions[reg]]})!= FWRs_db.end() ) {
+                                          if (FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}].compare("L")!= 0) {
+                                              cout << "Error with FWRS!"  << regions[reg] << " " << AA_REGIONS_TMP[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] << endl;
+                                          }
+                                      } else {
+                                          FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="L";
+                                      }
                                       Restricted_db[sequence_name][regions[reg]][MutationPlace][AA]= "Lethal";
                                       Restricted_is_OK=false;
                                       if (Restricted_db[sequence_name][regions[reg]][MutationPlace][AA].compare("")==0) {
@@ -854,14 +1084,23 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                               }
 
                           } else{
-                              Restricted_is_OK=true;
+                              if(!isThereAnStop(originalSeqAA)) {
+                                  if(!isThereAnStop(DNAtoprotein(mutatedSeq))) {
+                                      Restricted_is_OK=true;
+                                  }
+                              } else {
+                                Restricted_is_OK=true;
+                              }
+
                           }
 
                       }
 
 
                       if(DNAtoprotein(mutatedSeq).compare(originalSeqAA)!= 0) {
-                          if (!isThereAnStop(mutatedSeq)){ ///////y si es en CDRs?
+                          string mutatedSeqAA=DNAtoprotein(mutatedSeq);
+
+                          if (std::count(mutatedSeqAA.begin(), mutatedSeqAA.end(), '.') == std::count(originalSeqAA.begin(), originalSeqAA.end(), '.')){ ///////y si es en CDRs?
                               if (Restricted_is_OK){
                                   Keep_searching = false;
                               }
@@ -876,6 +1115,7 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
            }
 
             if (!Replacement && !Lethal) {
+                //cout << "Silenciosa " << regions[reg] << endl;
                 point=std::uniform_int_distribution<int>(0,REGIONS[regions[reg]].length()-1);
                 mutationPlace = point(generator2);
                 originalSeq=REGIONS["FWR1"] +REGIONS["CDR1"] +REGIONS["FWR2"] +REGIONS["CDR2"] +REGIONS["FWR3"]  +REGIONS["CDR3"] +REGIONS["FWR4"];
@@ -889,9 +1129,10 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                         //std::cout << "mutacion previa en" << mutationPlace << std::endl;
                         mutationPlace = point(generator2);
                         prueba=0;
-                        REGIONS_TMP= REGIONS;
+
                         //std::cout << "cambio mutacion a " << mutationPlace << std::endl;
                     }
+                    REGIONS_TMP= REGIONS;
                     //clock_gettime(CLOCK_MONOTONIC, &ts);
                     /* using nano-seconds instead of seconds */
                     //srand((time_t)ts.tv_nsec);
@@ -912,6 +1153,7 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
            }
 
             if (Replacement && Lethal) {
+                //cout << "R  L "  << regions[reg] << endl;
                 point=std::uniform_int_distribution<int>(0,REGIONS[regions[reg]].length()-1);
                  mutationPlace = point(generator2);
                  originalSeq=REGIONS["FWR1"] +REGIONS["CDR1"] +REGIONS["FWR2"] +REGIONS["CDR2"] +REGIONS["FWR3"]  +REGIONS["CDR3"] +REGIONS["FWR4"];
@@ -925,9 +1167,10 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                          //std::cout << "mutacion previa en" << mutationPlace << std::endl;
                          mutationPlace = point(generator2);
                          prueba=0;
-                         REGIONS_TMP= REGIONS;
+
                          //std::cout << "cambio mutacion a " << mutationPlace << std::endl;
                      }
+                     REGIONS_TMP= REGIONS;
                      prueba++;
 
                        const char arrayNucleotides[4] = {'A', 'U', 'G', 'C'};
@@ -938,7 +1181,7 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                        AA_REGIONS= Separating(MUTATIONS, originalSeqAA);
 
 
-                       if(DNAtoprotein(mutatedSeq).compare(originalSeqAA)!= 0) {
+                       if(AA_REGIONS_TMP[regions[reg]].compare(AA_REGIONS[regions[reg]])!= 0) {
                            if (std::find(regiones_F.begin(), regiones_F.end(), regions[reg]) != regiones_F.end()) {
 
 
@@ -954,22 +1197,41 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                                if (confirmar > 1) {
                                cout << "Shady" << endl;
 
+                               } else if (confirmar == 0) {
+                                   cout << "Shady2" << endl;
+
                                }
 
-
+                               Restricted_is_OK=false;
                                if ( Restricted_db[sequence_name][regions[reg]][MutationPlace].find(AA) != Restricted_db[sequence_name][regions[reg]][MutationPlace].end() ) {
 
                                    if (Restricted_db[sequence_name][regions[reg]][MutationPlace][AA].compare("Lethal")== 0) {
                                                Restricted_is_OK=true;
-                                       } else {
-                                       Restricted_is_OK=false;
-                               }
+                                               if (FWRs_db.find({regions[reg], AA_REGIONS_TMP[regions[reg]]})!= FWRs_db.end() ) {
+                                                   if (FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}].compare("L")== 0) {
+                                                       Restricted_is_OK=true;
+                                                   } else {
+                                                       cout <<"Error incongruency FWRs "  << regions[reg] << " " << AA_REGIONS_TMP[regions[reg]] << AA_REGIONS[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] << endl;
+                                                   }
+                                               } else {
+                                                   FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="L";
+                                                   Restricted_is_OK=true;
+                                               }
+                                       }
+
                                } else {
-                                   Restricted_db[sequence_name][regions[reg]][MutationPlace][AA]= "Lethal";
-                                   Restricted_is_OK=true;
-                                   if (Restricted_db[sequence_name][regions[reg]][MutationPlace][AA].compare("")==0) {
-                                       cout << "FALLO54"<<endl;
+                                   if (FWRs_db.find({regions[reg], AA_REGIONS_TMP[regions[reg]]})!= FWRs_db.end() ) {
+                                       if (FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}].compare("L")== 0) {
+                                           Restricted_db[sequence_name][regions[reg]][MutationPlace][AA]= "Lethal";
+                                           Restricted_is_OK=true;
+                                       }
+                                   } else {
+                                       FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="L";
+                                       Restricted_db[sequence_name][regions[reg]][MutationPlace][AA]= "Lethal";
+                                       Restricted_is_OK=true;
                                    }
+
+
                                }
 
                            }
@@ -990,6 +1252,7 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
 
             sequence=REGIONS["FWR1"] +REGIONS["CDR1"] +REGIONS["FWR2"] +REGIONS["CDR2"] +REGIONS["FWR3"]  +REGIONS["CDR3"] +REGIONS["FWR4"];
             protein_sequence=DNAtoprotein(sequence);
+            AA_REGIONS= Separating(MUTATIONS, protein_sequence);
 
 
 

@@ -5,6 +5,11 @@
 #include <string>
 #include <map>
 void initialize_Seeds (parameters &p);
+
+///RRR
+extern int global_seed;
+/// RRR
+
 class BCR
 {
     

@@ -146,7 +146,7 @@ parameters::parameters() {
   names[InitialNumberTC] = "    Initial Number T-cells    ";
   par[InitialNumberTC] = 250;
   names[InitialNumberCB] = "    Initial Number Centroblasts    ";
-  par[InitialNumberCB] = 0;
+  par[InitialNumberCB] = 0; //3
   names[InitialNumberFDC] = "    Initial Number FDCs    ";
   par[InitialNumberFDC] = 200;
 
@@ -180,7 +180,7 @@ parameters::parameters() {
   names[NoMutFounderCells] = "    FounderCellsDoNotMutate    ";
   par[NoMutFounderCells] = false;
   names[nDiv] = "    Number of divisions of founder cells ";
-  par[nDiv] = 12;
+  par[nDiv] = 12; //n*2^num_div, intenta que esten sobre las 12300
   names[nDiv_stddev] = "    stddev of Number of divisions  of founder cells ";
   par[nDiv_stddev] = 0;
   names[nDivinflow] = "    Number of divisions of influx Bcells    ";
@@ -236,7 +236,7 @@ parameters::parameters() {
   names[radius] = "    Lattice Radius (um)    ";
   par[radius] = 160;
   names[rateCBinflow] = "    rate of inflow (cells/hr.)    ";
-  par[rateCBinflow] = 2.0; ////RRR!!!
+  par[rateCBinflow] = 2.0; ////RRR!!!2.0
 
   // S
   names[smoothnessStopCBinflow] =
@@ -264,7 +264,7 @@ parameters::parameters() {
   names[testDelay] = "    Time gap between TFHC-CC binding tests  (hr.)    ";
   par[testDelay] = 0.02;  // Unit?
   names[tmax] = "    Maximum duration of GC simulation  (hr.)    ";
-  par[tmax] = 504;
+  par[tmax] = 504;  //Temporary504
   names[tolight] = " Rate for differentiation of centroblasts to centrocytes ";
   par[tolight] = 0.1;  // in hours, #temporary, check hyphasma
 
