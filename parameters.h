@@ -3,7 +3,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include "linkHyphasma/setparam.h"
+#include "setparam.h"
 
 using namespace std;
 //Name of parameters

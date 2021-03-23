@@ -5,7 +5,7 @@
 #include "chemokines3d.h"
 #include "output.h"
 #include "events.h"
-#include "linkHyphasma/setparam.h"
+#include "setparam.h"
 #include <iostream>
 #include <list>
 using namespace std;
