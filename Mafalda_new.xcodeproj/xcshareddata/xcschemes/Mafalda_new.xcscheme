@@ -52,15 +52,15 @@
       </BuildableProductRunnable>
       <CommandLineArguments>
          <CommandLineArgument
-            argument = "-h /Users/elenamerinotejero/Downloads/Elena_Network_to_check/bcinflow09.par"
+            argument = "-h /Users/elenamerinotejero/Documents/GitHub/GC_ABM_SHM_network/bcinflow09.par"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = " -s 25"
+            argument = " -s 12531238"
             isEnabled = "YES">
          </CommandLineArgument>
          <CommandLineArgument
-            argument = " -o /Users/elenamerinotejero/Downloads/Elena_Network_to_check/bcinflow09"
+            argument = " -o /Users/elenamerinotejero/Documents/GitHub/GC_ABM_SHM_network/ouutput"
             isEnabled = "YES">
          </CommandLineArgument>
       </CommandLineArguments>

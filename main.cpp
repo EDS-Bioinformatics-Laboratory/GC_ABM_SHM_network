@@ -8,8 +8,8 @@
 
 //#include <sys/stat.h>
 using namespace std;
-
-string base_Path=string("/home/rgarcia/Escritorio/NGly_network");
+//Elena:
+string base_Path=string("/Users/elenamerinotejero/Documents/GitHub/GC_ABM_SHM_network");
 string outputFolder=base_Path + "/Output"; /// I know it should be inputted as command line, don't hate me
 int global_seed=12531238;
 

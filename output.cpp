@@ -5,7 +5,7 @@
 #include "cell.h"
 #include <experimental/filesystem> ///RRR
 #include "SHM.h"
-#include <boost/algorithm/string/join.hpp>
+//#include <boost/algorithm/string/join.hpp>
 using namespace std;
 
 
@@ -62,6 +62,15 @@ void output::createFolder(string folderName) {
 #endif
 
 #ifdef __APPLE__
+    //#Danial: Fully changed
+    stringstream tmp;
+    tmp <<"/" << "sim_" << Output_ID << "_" << currentDateTime();
+          folderName = folderName + tmp.str();
+         output_path = folderName;
+
+        if (!(std::experimental::filesystem::create_directory(output_path))) { ///RRR tmp.str() Y otracosa
+          std::cerr << "Error creating directory " << std::endl; ///RRR
+        }
       char cstr [folderName.size()+1];
       strcpy(cstr,folderName.c_str());
       mkdir(cstr, 0777);

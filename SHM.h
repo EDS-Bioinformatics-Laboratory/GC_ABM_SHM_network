@@ -9,7 +9,7 @@
 #include <string>
 #include <random>
 #include "bcr.h"
-#include <boost/math/distributions/inverse_gamma.hpp>
+//#include <boost/math/distributions/inverse_gamma.hpp>
 
 
 ///0. Fixes
@@ -23,7 +23,7 @@ void confirmBCR(vector<float> &BCReceptor, std::string sequence, std::map<std::s
 void setGermBCR(vector<float> &BCReceptor, vector<float> &Germ_BCR,  int mother_ID);
 ///1. Load FASTA files
 
-static std::string fasta_path = "/home/rgarcia/Escritorio/NGly_scripts/Fastas";
+static std::string fasta_path = "/Users/elenamerinotejero/Documents/GitHub/GC_ABM_SHM_network/Fastas";
 static std::vector<std::string> fastas;
 static std::vector<std::string> fastas_remaining;
 void findFastas(std::string path);

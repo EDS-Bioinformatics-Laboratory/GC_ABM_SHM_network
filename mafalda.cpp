@@ -638,10 +638,10 @@ void simulation::Visualise(double t, parameters &p)
 //            gluLookAt(100.0,100.0,0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0);
             
 
-            nextToDisplay(&ListB_cell, &ListT_cell, &ListFDC, &ListP_cell, NULL, &ListSC, currentLattice, t);
-
-            display();
-             glutMainLoopEvent();
+//            nextToDisplay(&ListB_cell, &ListT_cell, &ListFDC, &ListP_cell, NULL, &ListSC, currentLattice, t);
+//
+//            display();
+//             glutMainLoopEvent();
         }
     else if (t>5 && t<85.)
         {
@@ -651,24 +651,24 @@ void simulation::Visualise(double t, parameters &p)
 
             if(fmod(t+1e-9,1)< p.par[dt])
                 {
-                    nextToDisplay(&ListB_cell, &ListT_cell, &ListFDC, &ListP_cell, NULL, &ListSC, currentLattice, t);
-                    display();
-                     glutMainLoopEvent();
+//                    nextToDisplay(&ListB_cell, &ListT_cell, &ListFDC, &ListP_cell, NULL, &ListSC, currentLattice, t);
+//                    display();
+//                     glutMainLoopEvent();
                 }
         }
     else if (t>85. && t< 87.)
         {
-            nextToDisplay(&ListB_cell, &ListT_cell, &ListFDC, &ListP_cell, NULL, &ListSC, currentLattice, t);
-            display();
-             glutMainLoopEvent();
+//            nextToDisplay(&ListB_cell, &ListT_cell, &ListFDC, &ListP_cell, NULL, &ListSC, currentLattice, t);
+//            display();
+//             glutMainLoopEvent();
         }
     else if (t>=87)
         {
             if(fmod(t+1e-9,1)< p.par[dt])
                 {
-                    nextToDisplay(&ListB_cell, &ListT_cell, &ListFDC, &ListP_cell, NULL, &ListSC, currentLattice, t);
-                    display();
-                     glutMainLoopEvent();
+//                    nextToDisplay(&ListB_cell, &ListT_cell, &ListFDC, &ListP_cell, NULL, &ListSC, currentLattice, t);
+//                    display();
+//                     glutMainLoopEvent();
                 }
         }
 }

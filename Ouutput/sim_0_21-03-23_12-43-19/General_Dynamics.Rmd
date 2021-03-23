@@ -1,0 +1,141 @@
+---
+title: "General_Dynamics"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+
+
+```{r echo=FALSE, include=FALSE}
+library(tidyverse)
+library(furrr)
+library(ggridges) # For info on how to use ridgelineplots in r see https://cran.r-project.org/web/packages/ggridges/vignettes/introduction.html
+
+library(scales)
+library(viridis)
+```
+
+
+
+```{r echo=FALSE, include=FALSE}
+
+file.name <- "Bcell_time.csv"
+
+df.Bcell.time.raw <- read_delim(file.path(file.name),  delim = ",", 
+                                  col_names = TRUE, col_types = cols(
+  time = col_double(),
+  founder = col_double(),
+  unselected = col_double(),
+  contact_FDC = col_double(),
+  FDC_selected = col_double(),
+  contact_TC = col_double(),
+  TC_selected = col_double(),
+  Recycled = col_double(),
+  Apoptosis = col_double(),
+  Affinity = col_double(),
+  stddev_Affinity = col_double()
+))
+
+```
+
+
+```{r}
+# Here we take all CCs INCLUDING APOPTOTIC!
+df.Bcell.time <- df.Bcell.time.raw %>%
+  gather(CCs, CCs_value, unselected:apoptosis,-recycled) %>%
+  gather(CBs, CBs_value, founder,recycled) 
+```
+
+```{r}
+df.CC.time <- df.Bcell.time.raw %>%
+  gather(CC_types, CC_types_value, unselected:apoptosis,-recycled) %>%
+  group_by(time)%>%
+  mutate(
+    CCs=sum(CC_types_value))%>%
+  ungroup()
+
+df.CB.time <- df.Bcell.time.raw %>%
+  gather(CB_types, CB_types_value, founder,recycled)%>%
+  group_by(time)%>%
+  mutate(
+    CBs=sum(CB_types_value)
+    )
+  
+```
+
+
+```{r}
+df.Bcell.time%>%
+  ggplot(aes(x = time, y = CCs_value, colour = CCs, ymax = 4000)) +
+  geom_point() +
+  labs(x = "Time ", y = "CC count") +
+
+# Modify theme components -------------------------------------------
+theme_ridges(font_size = 13, grid =FALSE) +
+theme(axis.title.x=element_text( hjust=0.5),  
+        axis.title.y=element_text( vjust=2, # lateral centering x axes
+                                   hjust=0.5), # up/down centering x axes (respect to image)
+        axis.ticks.y= element_line(size = 0.5, colour = "black"),
+        axis.line = element_line(size = 0.5, colour = "black"),
+        legend.position = c(0.8,0.75),
+        legend.box.background = element_rect(color="black", size=0.5)
+        )
+
+### NOTE VERY IMPORTANT: Here we take all CCs INCLUDING APOPTOTIC! Looking at previous plot without apoptotic CCs there are around 1000 CCs at peak which is what I show in model comparison.
+df.CC.time%>%
+  ggplot(aes(x = time, y = CCs, ymax = 5000)) +
+  geom_point() +
+  labs(x = "Time ", y = "CC count") +
+
+# Modify theme components -------------------------------------------
+theme_ridges(font_size = 13, grid =FALSE) +
+theme(axis.title.x=element_text( hjust=0.5),  
+        axis.title.y=element_text( vjust=2, # lateral centering x axes
+                                   hjust=0.5), # up/down centering x axes (respect to image)
+        axis.ticks.y= element_line(size = 0.5, colour = "black"),
+        axis.line = element_line(size = 0.5, colour = "black"),
+        legend.position = c(0.8,0.75),
+        legend.box.background = element_rect(color="black", size=0.5)
+        )
+```
+
+```{r}
+df.Bcell.time%>%
+  ggplot(aes(x = time, y = CBs_value, colour = CBs, ymax = 4000)) +
+  geom_point() +
+  labs(x = "Time ", y = "CB count") +
+
+# Modify theme components -------------------------------------------
+theme_ridges(font_size = 13, grid =FALSE) +
+theme(axis.title.x=element_text( hjust=0.5),  
+        axis.title.y=element_text( vjust=2, # lateral centering x axes
+                                   hjust=0.5), # up/down centering x axes (respect to image)
+        axis.ticks.y= element_line(size = 0.5, colour = "black"),
+        axis.line = element_line(size = 0.5, colour = "black"),
+        legend.position = c(0.8,0.75),
+        legend.box.background = element_rect(color="black", size=0.5)
+        )
+
+df.CB.time%>%
+  ggplot(aes(x = time, y = CBs, ymax = 4000)) +
+  geom_point() +
+  labs(x = "Time ", y = "CB count") +
+
+# Modify theme components -------------------------------------------
+theme_ridges(font_size = 13, grid =FALSE) +
+theme(axis.title.x=element_text( hjust=0.5),  
+        axis.title.y=element_text( vjust=2, # lateral centering x axes
+                                   hjust=0.5), # up/down centering x axes (respect to image)
+        axis.ticks.y= element_line(size = 0.5, colour = "black"),
+        axis.line = element_line(size = 0.5, colour = "black"),
+        legend.position = c(0.8,0.75),
+        legend.box.background = element_rect(color="black", size=0.5)
+        )
+```
+

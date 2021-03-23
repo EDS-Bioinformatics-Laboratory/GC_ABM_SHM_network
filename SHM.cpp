@@ -8,8 +8,8 @@
 #include<string>
 #include <random>
 #include <regex>
-#include <boost/math/distributions/inverse_gamma.hpp>
-#include <boost/algorithm/string.hpp>
+//#include <boost/math/distributions/inverse_gamma.hpp>
+//#include <boost/algorithm/string.hpp>
 #include <time.h>
 #include <experimental/filesystem>
 #include <sstream>
@@ -473,7 +473,7 @@ void getSequence(std::map<std::string, std::string> & REGIONS, std::map<std::str
                     content.clear();
 
                 } else if( !name.empty() ){
-                    boost::to_upper(line);
+//                    boost::to_upper(line);
                     if( line.find(' ') != std::string::npos ){ // Invalid sequence--no spaces allowed
                         std::cerr << "Error, check FASTA file. Bailing out." << std::endl;
                     } else {
