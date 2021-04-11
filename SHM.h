@@ -14,10 +14,17 @@
 
 ///0. Fixes
 extern int global_seed;
+extern string base_Path;
 extern std::map<std::string, std::vector<float>> Seq_affinity;
 extern std::map<std::string, std::map<std::string,std::map<int, std::map<std::string, std::string>>>> Restricted_db;
 extern std::map<std::vector<std::string>, std::vector<float>> CDRs_affinity;
 extern std::map<std::vector<std::string>, std::string> FWRs_db;
+extern std::map<std::string, std::vector<float>> Seq_affinity_original;
+extern std::map<std::string, std::map<std::string,std::map<int, std::map<std::string, std::string>>>> Restricted_db_original;
+extern std::map<std::vector<std::string>, std::vector<float>> CDRs_affinity_original;
+extern std::map<std::vector<std::string>, std::string> FWRs_db_original;
+
+
 
 void confirmBCR(vector<float> &BCReceptor, std::string sequence, std::map<std::string, std::string> AA_REGIONS, int mother_ID, int cell_ID);
 void setGermBCR(vector<float> &BCReceptor, vector<float> &Germ_BCR,  int mother_ID);
@@ -29,7 +36,7 @@ static std::vector<std::string> fastas_remaining;
 void findFastas(std::string path);
 bool checkDNA(std::string DNA);
 void findAndReplaceAll(std::string & data, std::string toSearch, std::string replaceStr);
-void getSequence(std::map<std::string, std::string> & REGIONS, std::map<std::string, std::vector<int>> & MUTATIONS, std::string &sequence,  std::string &germline_name);
+void getSequence(std::map<std::string, std::string> & REGIONS, std::map<std::string, std::vector<int>> & MUTATIONS, std::string &sequence,  std::string &germline_name, int &ORF);
 void add_seq_to_Restricted (std::map<std::string, std::string> & AA_REGIONS, std::string sequence_name);
 std::string mapToString(std::map<std::string, std::vector<int>>  &m);
 std::string mapToString2(std::map<std::string, std::string>  &m);

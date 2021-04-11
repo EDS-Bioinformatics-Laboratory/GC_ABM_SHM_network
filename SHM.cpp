@@ -28,6 +28,13 @@ std::map<std::string, std::map<std::string, std::map<int, std::map<std::string, 
 std::map<std::vector<std::string>, std::vector<float>> CDRs_affinity;
 std::map<std::vector<std::string>, std::string> FWRs_db;
 
+
+std::map<std::string, std::vector<float>> Seq_affinity_original;
+std::map<std::string, std::map<std::string, std::map<int, std::map<std::string, std::string>>>> Restricted_db_original;
+std::map<std::vector<std::string>, std::vector<float>> CDRs_affinity_original;
+std::map<std::vector<std::string>, std::string> FWRs_db_original;
+
+
 static std::mt19937 generator(global_seed+3);
 static std::mt19937 generator2(global_seed +1532);
 std::default_random_engine generator_fasta(global_seed +1);
@@ -36,69 +43,69 @@ static std::mt19937 gen(global_seed +2);
 
 void confirmBCR(vector<float> &BCReceptor, std::string sequence, std::map<std::string, std::string> AA_REGIONS, int mother_ID, int cell_ID) {
 
-    char filename[ ] = "bcinflow09/Sequence_db.csv";
+    string const Sequence_path= base_Path + "/" + "bcinflow09/Sequence_db.csv";
     fstream database;
-    std::ifstream database2 ("bcinflow09/Sequence_db.csv");
+    std::ifstream database2 (Sequence_path);
 
-    char filename_restricted[ ] = "bcinflow09/Restricted_db.csv";
+    string const Sequence_path_restricted= base_Path + "/" + "bcinflow09/Restricted_db.csv";
     fstream database_restricted;
-    std::ifstream database2_restricted ("bcinflow09/Restricted_db.csv");
+    std::ifstream database2_restricted (Sequence_path_restricted);
 
-    char filename_CDRs[ ] = "bcinflow09/CDRs_db.csv";
+    string const Sequence_path_CDR= base_Path + "/" + "bcinflow09/CDRs_db.csv";
     fstream database_CDRs;
-    std::ifstream database2_CDRs ("bcinflow09/CDRs_db.csv");
+    std::ifstream database2_CDRs (Sequence_path_CDR);
 
-    char filename_FWRs[ ] = "bcinflow09/FWRs_db.csv";
+    string const Sequence_path_FWRs= base_Path + "/" + "bcinflow09/FWRs_db.csv";
     fstream database_FWRs;
-    std::ifstream database2_FWRs ("bcinflow09/FWRs_db.csv");
+    std::ifstream database2_FWRs (Sequence_path_FWRs);
 
          if (Seq_affinity.size() == 0) {
 
-             database.open(filename,fstream::app);
+             database.open(Sequence_path,fstream::app);
               // If file does not exist, Create new file
               if (!database )
               {
                 cout << "Cannot open file, file does not exist. Creating new file.." << endl;
                 database.close();
-                database.open(filename,  fstream::out);
+                database.open(Sequence_path,  fstream::out);
                 //database.close();
 
               }
               database.close();
 
-              database_restricted.open(filename_restricted,fstream::app);
+              database_restricted.open(Sequence_path_restricted,fstream::app);
                // If file does not exist, Create new file
                if (!database_restricted )
                {
                  cout << "Cannot open file, file does not exist. Creating new file.." << endl;
                  database_restricted.close();
-                 database_restricted.open(filename_restricted,  fstream::out);
+                 database_restricted.open(Sequence_path_restricted,  fstream::out);
                  //database.close();
 
                }
                database_restricted.close();
 
 
-               database_CDRs.open(filename_CDRs,fstream::app);
+               database_CDRs.open(Sequence_path_CDR,fstream::app);
                 // If file does not exist, Create new file
                 if (!database_CDRs )
                 {
                   cout << "Cannot open file, file does not exist. Creating new file.." << endl;
                   database_CDRs.close();
-                  database_CDRs.open(filename_CDRs,  fstream::out);
+                  database_CDRs.open(Sequence_path_CDR,  fstream::out);
                   //database.close();
 
                 }
                 database_CDRs.close();
 
 
-                database_FWRs.open(filename_FWRs,fstream::app);
+                database_FWRs.open(Sequence_path_FWRs,fstream::app);
                  // If file does not exist, Create new file
                  if (!database_FWRs )
                  {
                    cout << "Cannot open file, file does not exist. Creating new file.." << endl;
                    database_FWRs.close();
-                   database_FWRs.open(filename_FWRs,  fstream::out);
+                   database_FWRs.open(Sequence_path_FWRs,  fstream::out);
                    //database.close();
 
                  }
@@ -141,7 +148,7 @@ void confirmBCR(vector<float> &BCReceptor, std::string sequence, std::map<std::s
                   }
                   database2.close();
               }
-
+              Seq_affinity_original=Seq_affinity;
 
 
               int iy_restricted = 0;
@@ -181,7 +188,7 @@ void confirmBCR(vector<float> &BCReceptor, std::string sequence, std::map<std::s
                   }
                   database2_restricted.close();
               }
-
+              Restricted_db_original=Restricted_db;
 
               vector<string> row_CDR;
               string lineCDR, wordCDR;
@@ -210,7 +217,7 @@ void confirmBCR(vector<float> &BCReceptor, std::string sequence, std::map<std::s
                 }
                 database2_CDRs.close();
               }
-
+             CDRs_affinity_original=CDRs_affinity;
              vector<string> row_FWR;
              string lineFWR, wordFWR;
              if (database2_FWRs.is_open())
@@ -244,6 +251,7 @@ void confirmBCR(vector<float> &BCReceptor, std::string sequence, std::map<std::s
                }
                database2_FWRs.close();
              }
+             FWRs_db_original=FWRs_db;
          }
 
          vector<float> results;
@@ -432,7 +440,7 @@ std::string mapToString2(std::map<std::string, std::string>  &m) {
 
 ///1.5 Load sequence, regions and mutations in B-cell
 
-void getSequence(std::map<std::string, std::string> & REGIONS, std::map<std::string, std::vector<int>> & MUTATIONS, std::string &sequence, std::string &germline_name) {
+void getSequence(std::map<std::string, std::string> & REGIONS, std::map<std::string, std::vector<int>> & MUTATIONS, std::string &sequence, std::string &germline_name, int &ORF) {
     int argc = 2;
 
     bool All_not_OK= true;
@@ -496,18 +504,21 @@ void getSequence(std::map<std::string, std::string> & REGIONS, std::map<std::str
         sequence= REGIONS["FWR1"] +REGIONS["CDR1"] +REGIONS["FWR2"] +REGIONS["CDR2"] +REGIONS["FWR3"]  +REGIONS["CDR3"] +REGIONS["FWR4"] ;
 
         All_not_OK= false;
+        ORF=1;
         if(isThereAnStop(DNAtoprotein(sequence))) {
             cout  << "A seq "<< input << " has no good 1st ORF" << endl;
             std::map<std::string, std::string> tmporal =REGIONS;
             REGIONS["FWR1"].erase(0,1);
+            ORF=2;
             sequence= REGIONS["FWR1"] +REGIONS["CDR1"] +REGIONS["FWR2"] +REGIONS["CDR2"] +REGIONS["FWR3"]  +REGIONS["CDR3"] +REGIONS["FWR4"] ;
             if(isThereAnStop(DNAtoprotein(sequence))) {
-
+                ORF=3;
                 REGIONS["FWR1"].erase(0,1);
                 sequence= REGIONS["FWR1"] +REGIONS["CDR1"] +REGIONS["FWR2"] +REGIONS["CDR2"] +REGIONS["FWR3"]  +REGIONS["CDR3"] +REGIONS["FWR4"] ;
 
             } if(isThereAnStop(DNAtoprotein(sequence))) {
                 cout << "A seq "<< input << " has no valid ORF" << endl;
+                ORF=454;
                 All_not_OK= true;
 
             }

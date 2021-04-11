@@ -122,6 +122,7 @@ public:
     std::string sequence;
     std::string sequence_origen;
     std::string protein_sequence;
+    int ORF;
     vector<int> All_NGly_germline_sites;
     vector<int> NGly_germline_sites;
     vector<int> NGly_mother_sites;
@@ -201,6 +202,7 @@ public:
     ///RRR
     std::string sequence;
     std::string protein_sequence;
+    int ORF;
     std::map<string, vector<int>> MUTATIONS;
     std::map<string, vector<int>> SILENT_MUTATIONS;
     std::map<std::string, std::string> REGIONS;
@@ -246,6 +248,7 @@ public:
     ///RRR
     std::string sequence;
     std::string protein_sequence;
+    int ORF;
     std::map<string, vector<int>> MUTATIONS;
     std::map<string, vector<int>> SILENT_MUTATIONS;
     std::map<std::string, std::string> REGIONS;

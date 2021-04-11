@@ -3,7 +3,7 @@
 //#include "lattice.h"
 //#include "parameters.h"
 //#include "chemokines3d.h"
-//#include "linkHyphasma/setparam.h"
+//#include "setparam.h"
 //#include <iostream>
 //#include <list>
 //#include <getopt.h> /// Library to filter arguments from the command line to the main

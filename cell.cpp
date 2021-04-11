@@ -284,7 +284,8 @@ B_cell::B_cell(parameters& p)
     sequence="";
     sequence_origen="";
     germline_name="tofill";
-    getSequence(REGIONS, MUTATIONS, sequence_origen, germline_name);
+    ORF=453;
+    getSequence(REGIONS, MUTATIONS, sequence_origen, germline_name, ORF);
     SILENT_MUTATIONS=MUTATIONS;
     sequence=sequence_origen;
     protein_sequence = DNAtoprotein(sequence);
@@ -365,6 +366,7 @@ B_cell::B_cell(parameters& p, B_cell* Mom):cell(), myBCR(p) {
     REGIONS =Mom->REGIONS;
     MOM_REGIONS =Mom->REGIONS;
     sequence=Mom->sequence;
+    ORF=Mom->ORF;
     AA_GERM_REGIONS =Mom->AA_GERM_REGIONS;
     germline_name=Mom->germline_name;
     protein_sequence=Mom->protein_sequence;
@@ -732,6 +734,7 @@ Plasma_cell::Plasma_cell(parameters& p, B_cell* Bcell) : cell(Bcell), myBCR(p) {
   REGIONS=Bcell->REGIONS;
   protein_sequence=Bcell->protein_sequence;
   MUTATIONS = Bcell->MUTATIONS;
+  ORF=Bcell->ORF;
   SILENT_MUTATIONS = Bcell->SILENT_MUTATIONS;
   AA_REGIONS=Separating(MUTATIONS, protein_sequence);
   AA_MOM_REGIONS=Bcell->AA_REGIONS;
@@ -803,6 +806,7 @@ Memory_cell::Memory_cell(parameters& p, B_cell* Bcell) : cell(Bcell), myBCR(p) {
   REGIONS=Bcell->REGIONS;
   protein_sequence=Bcell->protein_sequence;
   MUTATIONS = Bcell->MUTATIONS;
+  ORF=Bcell->ORF;
   SILENT_MUTATIONS = Bcell->SILENT_MUTATIONS;
   AA_REGIONS=Separating(MUTATIONS, protein_sequence);
   AA_MOM_REGIONS=Bcell->AA_REGIONS;

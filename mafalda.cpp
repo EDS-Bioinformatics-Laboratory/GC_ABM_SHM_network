@@ -515,7 +515,7 @@ void simulation::simulate(lattice& l, parameters& p)
     currentOutput->~output();
 
     fstream database;
-    database.open("bcinflow09/Sequence_db.csv",  fstream::out);
+    database.open(base_Path + "/" +"bcinflow09/Sequence_db.csv",  fstream::out);
     fstream myStream;
     for(auto& kv : Seq_affinity) {
       database << kv.first  <<  ',' << kv.second[0]  <<  ','  << kv.second[1]  <<  ','  << kv.second[2]  <<  ','  << kv.second[3]  <<  ',' << "\n";
@@ -524,7 +524,7 @@ void simulation::simulate(lattice& l, parameters& p)
 
 
     fstream database2;
-    database2.open("bcinflow09/Restricted_db.csv",  fstream::out);
+    database2.open(base_Path + "/" +"bcinflow09/Restricted_db.csv",  fstream::out);
     fstream myStream2;
     for(auto& kv : Restricted_db) {
       for(auto& kv2 : kv.second) {
@@ -538,7 +538,7 @@ void simulation::simulate(lattice& l, parameters& p)
     database2.close();
 
     fstream databaseCDR;
-    databaseCDR.open("bcinflow09/CDRs_db.csv",  fstream::out);
+    databaseCDR.open(base_Path + "/" +"bcinflow09/CDRs_db.csv",  fstream::out);
     fstream myStreamCDR;
     for(auto& kv : CDRs_affinity) {
       databaseCDR << kv.first[0]  <<  ',' << kv.first[1]  <<  ',' << kv.first[2]  <<  ',' << kv.second[0]  <<  ','  << kv.second[1]  <<  ','  << kv.second[2]  <<  ','  << kv.second[3]  <<  ',' << "\n";
@@ -546,7 +546,7 @@ void simulation::simulate(lattice& l, parameters& p)
     databaseCDR.close();
 
     fstream databaseFWR;
-    databaseFWR.open("bcinflow09/FWRs_db.csv",  fstream::out);
+    databaseFWR.open(base_Path + "/" +"bcinflow09/FWRs_db.csv",  fstream::out);
     fstream myStreamFWR;
     for(auto& kv : FWRs_db) {
       databaseFWR << kv.first[0]  <<  ',' << kv.first[1]  <<  ','  << kv.second << "\n";
