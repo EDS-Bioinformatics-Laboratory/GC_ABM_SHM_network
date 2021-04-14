@@ -1096,20 +1096,21 @@ void B_cell::proliferate(parameters& p, lattice& l, double time,
         daughter_Bcell->retained_Ag = all_ag - retained_Ag;
         ///Elena-network
         //Elena: network: Divide TF levels asymmetrically among daughter cells
-//        BCL6 = pitmp*all_bcl6;
-//        daughter_Bcell->BCL6 = all_bcl6 - BCL6;
-//        IRF4 = pitmp*all_irf4;
-//        daughter_Bcell->IRF4 = all_irf4 - IRF4;
-//        BLIMP1 = pitmp*all_blimp1;
-//        daughter_Bcell->BLIMP1 = all_blimp1 - BLIMP1;
+        pitmp = rand() % 2; ////////////////////// DIVIDE TF FULLY ASYMMETRICALLY
+        BCL6 = pitmp*all_bcl6;
+        daughter_Bcell->BCL6 = all_bcl6 - BCL6;
+        IRF4 = pitmp*all_irf4;
+        daughter_Bcell->IRF4 = all_irf4 - IRF4;
+        BLIMP1 = pitmp*all_blimp1;
+        daughter_Bcell->BLIMP1 = all_blimp1 - BLIMP1;
         ///Elena-network
         ///R TEMP
-        BCL6 = all_bcl6/2;
-        daughter_Bcell->BCL6 = all_bcl6 - BCL6;
-        IRF4 = all_irf4/2;
-        daughter_Bcell->IRF4 = all_irf4 - IRF4;
-        BLIMP1 = all_blimp1/2;
-        daughter_Bcell->BLIMP1 = all_blimp1 - BLIMP1;
+//        BCL6 = all_bcl6/2;
+//        daughter_Bcell->BCL6 = all_bcl6 - BCL6;
+//        IRF4 = all_irf4/2;
+//        daughter_Bcell->IRF4 = all_irf4 - IRF4;
+//        BLIMP1 = all_blimp1/2;
+//        daughter_Bcell->BLIMP1 = all_blimp1 - BLIMP1;
         /// R TEMP
       } else {
         double all_ag = retained_Ag;

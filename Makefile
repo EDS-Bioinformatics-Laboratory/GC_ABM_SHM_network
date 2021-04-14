@@ -142,7 +142,6 @@ DIST          = /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -265,7 +264,6 @@ Makefile: Mafalda_Network.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qm
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf \
-		.qmake.stash \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf \
@@ -349,7 +347,6 @@ Makefile: Mafalda_Network.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qm
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/qt_config.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_post.prf:
-.qmake.stash:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exclusive_builds.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/toolchain.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/default_pre.prf:
@@ -440,8 +437,8 @@ compiler_clean: compiler_moc_predefs_clean
 
 bcr.o: bcr.cpp bcr.h \
 		parameters.h \
-		linkHyphasma/setparam.h \
-		linkHyphasma/dynarray.h \
+		setparam.h \
+		dynarray.h \
 		random.h \
 		cell.h \
 		vector3d.h \
@@ -453,8 +450,8 @@ bcr.o: bcr.cpp bcr.h \
 cell.o: cell.cpp cell.h \
 		vector3d.h \
 		parameters.h \
-		linkHyphasma/setparam.h \
-		linkHyphasma/dynarray.h \
+		setparam.h \
+		dynarray.h \
 		network.h \
 		odesolver.h \
 		bcr.h \
@@ -470,8 +467,8 @@ cell.o: cell.cpp cell.h \
 chemokines3D.o: chemokines3D.cpp chemokines3d.h \
 		vector3d.h \
 		parameters.h \
-		linkHyphasma/setparam.h \
-		linkHyphasma/dynarray.h
+		setparam.h \
+		dynarray.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o chemokines3D.o chemokines3D.cpp
 
 GC3D.o: GC3D.cpp trackball.h \
@@ -483,8 +480,8 @@ GC3D.o: GC3D.cpp trackball.h \
 		cell.h \
 		vector3d.h \
 		parameters.h \
-		linkHyphasma/setparam.h \
-		linkHyphasma/dynarray.h \
+		setparam.h \
+		dynarray.h \
 		network.h \
 		odesolver.h \
 		bcr.h \
@@ -498,8 +495,8 @@ lattice.o: lattice.cpp lattice.h \
 		chemokines3d.h \
 		vector3d.h \
 		parameters.h \
-		linkHyphasma/setparam.h \
-		linkHyphasma/dynarray.h \
+		setparam.h \
+		dynarray.h \
 		cell.h \
 		network.h \
 		odesolver.h \
@@ -513,8 +510,8 @@ mafalda.o: mafalda.cpp mafalda.h \
 		chemokines3d.h \
 		vector3d.h \
 		parameters.h \
-		linkHyphasma/setparam.h \
-		linkHyphasma/dynarray.h \
+		setparam.h \
+		dynarray.h \
 		cell.h \
 		network.h \
 		odesolver.h \
@@ -535,8 +532,8 @@ main.o: main.cpp mafalda.h \
 		chemokines3d.h \
 		vector3d.h \
 		parameters.h \
-		linkHyphasma/setparam.h \
-		linkHyphasma/dynarray.h \
+		setparam.h \
+		dynarray.h \
 		cell.h \
 		network.h \
 		odesolver.h \
@@ -556,8 +553,8 @@ output.o: output.cpp output.h \
 		vector3d.h \
 		cell.h \
 		parameters.h \
-		linkHyphasma/setparam.h \
-		linkHyphasma/dynarray.h \
+		setparam.h \
+		dynarray.h \
 		network.h \
 		odesolver.h \
 		bcr.h \
@@ -570,8 +567,8 @@ output.o: output.cpp output.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o output.o output.cpp
 
 parameters.o: parameters.cpp parameters.h \
-		linkHyphasma/setparam.h \
-		linkHyphasma/dynarray.h
+		setparam.h \
+		dynarray.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o parameters.o parameters.cpp
 
 random.o: random.cpp random.h \
@@ -579,8 +576,8 @@ random.o: random.cpp random.h \
 		vector3d.h \
 		cell.h \
 		parameters.h \
-		linkHyphasma/setparam.h \
-		linkHyphasma/dynarray.h \
+		setparam.h \
+		dynarray.h \
 		network.h \
 		odesolver.h \
 		bcr.h \
@@ -589,7 +586,7 @@ random.o: random.cpp random.h \
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o random.o random.cpp
 
 setparam.o: setparam.cpp setparam.h \
-		linkHyphasma/dynarray.h
+		dynarray.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o setparam.o setparam.cpp
 
 trackball.o: trackball.cpp trackball.h
@@ -601,8 +598,8 @@ vector3d.o: vector3d.cpp vector3d.h
 SHM.o: SHM.cpp SHM.h \
 		bcr.h \
 		parameters.h \
-		linkHyphasma/setparam.h \
-		linkHyphasma/dynarray.h \
+		setparam.h \
+		dynarray.h \
 		cell.h \
 		vector3d.h \
 		network.h \
@@ -614,8 +611,8 @@ events.o: events.cpp events.h \
 		cell.h \
 		vector3d.h \
 		parameters.h \
-		linkHyphasma/setparam.h \
-		linkHyphasma/dynarray.h \
+		setparam.h \
+		dynarray.h \
 		network.h \
 		odesolver.h \
 		bcr.h \

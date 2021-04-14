@@ -897,8 +897,9 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
 
         Replacement = false;
         Lethal=false;
-            if (distribution(generator) <= RATES_OF_MUTATIONS["alpha_FWR"] && !Lethal) {
-                probRegion= distribution(generator);
+        probRegion= distribution(generator);
+            if (probRegion <= RATES_OF_MUTATIONS["alpha_FWR"] && !Lethal) {
+
                 if (probRegion <= RATES_OF_MUTATIONS["alpha_FWR1"]) {
                     reg=0;
                     if (distribution(generator) <= RATES_OF_MUTATIONS["beta_FWR1"]) {
@@ -925,13 +926,13 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
 
             } else {
 
-                probRegion= distribution(generator);
-                if (probRegion <= RATES_OF_MUTATIONS["alpha_CDR1"]) {
+
+                if (probRegion <= (RATES_OF_MUTATIONS["alpha_FWR"] + RATES_OF_MUTATIONS["alpha_CDR1"])) {
                     reg=1;
                     if (distribution(generator) <= RATES_OF_MUTATIONS["gamma_CDR1"]) {
                         Replacement=true;
                     }
-                } else if (probRegion <= (RATES_OF_MUTATIONS["alpha_CDR1"]+RATES_OF_MUTATIONS["alpha_CDR2"])) {
+                } else if (probRegion <= (RATES_OF_MUTATIONS["alpha_FWR"] + RATES_OF_MUTATIONS["alpha_CDR1"]+RATES_OF_MUTATIONS["alpha_CDR2"])) {
                     reg=3;
                     if (distribution(generator) <= RATES_OF_MUTATIONS["gamma_CDR2"]) {
                         Replacement=true;
