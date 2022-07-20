@@ -15,10 +15,11 @@ This repository includes code ONLY of the multiscale model of plasma cell difere
 The GRN is based on Martinez et al., 2012. 
 
 ## How-to run
--Modify base_Path variable.
--Modify /home/rgarcia/Escritorio/NGly_scripts/Control_VJ_GC_model path to the path where your NT Fab multifasta (separated per region) files are.
--Create a Sequence_db.csv in bcinflow09 where your whole Fab input AA sequences are assigned a coordinate in the shape space (see example in folder).
--Give it a try!
+* QT parameter files are included. It makes your life easier!
+* Modify base_Path variable.
+* Modify /home/rgarcia/Escritorio/NGly_scripts/Control_VJ_GC_model path to the path where your NT Fab multifasta (separated per region) files are.
+* Create a Sequence_db.csv in bcinflow09 where your whole Fab input AA sequences are assigned a coordinate in the shape space (see example in folder).
+* Give it a try!
 
 ## Software
 All software is written in C++
