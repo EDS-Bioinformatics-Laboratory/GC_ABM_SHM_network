@@ -680,6 +680,7 @@ void simulation::Calc_BC(double t,parameters &p,lattice &l, vector<vector3D>&red
         {
             B_cell* Bcell = ListB_cell.at(i);
             Bcell->clock += 1;
+
             ///Elena-network
             //Elena: network: Calculate TF levels of Bcell every dt.
             if((Bcell->cell_state != contact_FDC)&&(Bcell->cell_state != contact_TC)) 
@@ -1086,11 +1087,22 @@ void simulation::Calc_BC(double t,parameters &p,lattice &l, vector<vector3D>&red
 //Centroblasts_______________________________________________________________________________________________
             if (Bcell->cell_type==Centroblast)
                 {
-                if(Bcell->cell_state==apoptosis) {
-                    currentOutput->close_event(Bcell, sim_output,t);
-                    currentOutput->write_event( Bcell, sim_output);
-                    going_to_delet.push_back(Bcell->ID);
+
+                if(Bcell->cell_state==apoptosis && Bcell->MyAffinity == 0 ) {/* && Bcell->cyclestate==cycle_G0*/
+                    //cout <<"OHHHHHHhhhh uno muerto " << Bcell->MyAffinity << endl;
+//                    double test_prob=random::randomDouble(1);
+//                    if(random::randomDouble(1)<p.par[macrophage])
+//                    {
+                        //#record_event
+                        currentOutput->close_event(Bcell, sim_output,t);
+                        currentOutput->write_event( Bcell, sim_output);
+                        going_to_delet.push_back(Bcell->ID);
+//                    } else {
+//                        cout <<"OHHHHHHhhhh uno escapo " << Bcell->MyAffinity << endl;
+//                    }
+
                 } else {
+
                         // Increase cell cycle time
                         Bcell->cycle_state_time += p.par[dt];
                         // Resensitize
@@ -1101,9 +1113,12 @@ void simulation::Calc_BC(double t,parameters &p,lattice &l, vector<vector3D>&red
                                 Bcell->ContinueCellCycle(p);
                                 Bcell->cycle_state_time=0.0;
                             }
+
                         // #Sequential After finishing the cell cycle B cell divides in same time step
                         if (Bcell->cyclestate==cycle_Divide)
                             {
+
+
                                  ///Elena-network
                                  EventOutput->recordEvent(Bcell, event_divide, t); //Elena: events: record history output at division state.
                                  ///Elena-network
@@ -1139,39 +1154,39 @@ void simulation::Calc_BC(double t,parameters &p,lattice &l, vector<vector3D>&red
                                         ///Elena-network
 
                                         ///RRR elimino from here onwards:
-                                    if ( Bcell->retained_Ag > 0.)
-                                    {
-                                        if(Bcell->BLIMP1 >= 8) //Elena: network parameter defined in parameterfile.
-                                        {
-                                            //cout<<"Plasma"<<endl;
-                                            Bcell->cell_type=Plasmacell;
-                                            Bcell->cell_state=Plasma_in_GC;//Elena: Change cell state. Important for output!
-                                            EventOutput->recordEvent(Bcell, event_become_plasma, t);
-                                        }
-                                       else
-                                        {
-                                            if (Bcell->IamHighAg)
-                                            {
-                                                //cout<<"Memory"<<endl;
-                                                Bcell->cell_type=Memorycell;
-                                                Bcell->cell_state=Memory_in_GC;//Elena: Change cell state. Important for output!
-                                                EventOutput->recordEvent(Bcell, event_become_memory, t);
-                                            }
-                                        }
+//                                    if ( Bcell->retained_Ag > 0.)
+//                                    {
+//                                        if(Bcell->BLIMP1 >= 8) //Elena: network parameter defined in parameterfile.
+//                                        {
+//                                            //cout<<"Plasma"<<endl;
+//                                            Bcell->cell_type=Plasmacell;
+//                                            Bcell->cell_state=Plasma_in_GC;//Elena: Change cell state. Important for output!
+//                                            EventOutput->recordEvent(Bcell, event_become_plasma, t);
+//                                        }
+//                                       else
+//                                        {
+//                                            if (Bcell->IamHighAg)
+//                                            {
+//                                                //cout<<"Memory"<<endl;
+//                                                Bcell->cell_type=Memorycell;
+//                                                Bcell->cell_state=Memory_in_GC;//Elena: Change cell state. Important for output!
+//                                                EventOutput->recordEvent(Bcell, event_become_memory, t);
+//                                            }
+//                                        }
                                      ///Elena-network
 
                                         ///RRR until here
 
                                         ///Elena -network adapted
-//                                       if ( Bcell->retained_Ag > 0 && Bcell->BLIMP1 >= 8 ) {  /// p.par[BLIMP1th] = 8; in this version we dont have these params in par file
-//                                           Bcell->cell_type=Plasmacell;
-//                                           Bcell->cell_state=Plasma_in_GC;
-//                                           EventOutput->recordEvent(Bcell, event_become_plasma, t);
-//                                       } else if (Bcell->retained_Ag > 0 && Bcell->IamHighAg ) {
-//                                           Bcell->cell_type=Memorycell;
-//                                           Bcell->cell_state=Memory_in_GC;
-//                                           EventOutput->recordEvent(Bcell, event_become_memory, t);
-                                        ///Elena -network adapted
+                                       if ( Bcell->retained_Ag > 0 && Bcell->BLIMP1 >= 8 ) {  /// p.par[BLIMP1th] = 8; in this version we dont have these params in par file
+                                           Bcell->cell_type=Plasmacell;
+                                           Bcell->cell_state=Plasma_in_GC;
+                                           EventOutput->recordEvent(Bcell, event_become_plasma, t);
+                                       } else if (Bcell->retained_Ag > 0 && Bcell->IamHighAg ) {
+                                           Bcell->cell_type=Memorycell;
+                                           Bcell->cell_state=Memory_in_GC;
+                                           EventOutput->recordEvent(Bcell, event_become_memory, t);
+                                        //Elena -network adapted
                                        } else {
                                                 //CCs created here
                                                 Bcell->isResponsive2CXCL12=false;
@@ -1266,6 +1281,7 @@ void simulation::Calc_Out(double t,parameters &p,lattice &l, vector<vector3D>&re
             {
                 l.removecellat(Plasma->position);
                 Plasma->cell_state=Plasma_Out;
+                Plasma->depart_time = t;
             }
             else
             {
@@ -1287,6 +1303,7 @@ void simulation::Calc_Out(double t,parameters &p,lattice &l, vector<vector3D>&re
             {
                 l.removecellat(Memory->position);
                 Memory->cell_state=Plasma_Out;
+                Memory->depart_time = t;
             }
             else
             {

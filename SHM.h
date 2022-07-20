@@ -30,7 +30,7 @@ void confirmBCR(vector<float> &BCReceptor, std::string sequence, std::map<std::s
 void setGermBCR(vector<float> &BCReceptor, vector<float> &Germ_BCR,  int mother_ID);
 ///1. Load FASTA files
 
-static std::string fasta_path = "/home/rgarcia/Escritorio/NGly_scripts/Fastas";
+static std::string fasta_path = "/home/rgarcia/Escritorio/NGly_scripts/Control_VJ_GC_model"; ///RRR5k "/home/rgarcia/Escritorio/NGly_scripts/MariaGC_1000_processed_fastas/Fastas_ABM/Fastas_r"
 static std::vector<std::string> fastas;
 static std::vector<std::string> fastas_remaining;
 void findFastas(std::string path);
@@ -52,38 +52,28 @@ bool isThereAnStop (std::string sequence);
 static double lambda = 0.4; ///1.5 for acpa
 
 
-///static double alpha_FWR1 = 0.17;
-///static double alpha_FWR2 = 0.17;
-///static double alpha_FWR3 = 0.29;
-///static double alpha_FWR4 = 0.05;
-///static double alpha_CDR1 = 0.10;
-///static double alpha_CDR2 = 0.03;
-///static double alpha_CDR3 = 0.19;
-static double alpha_FWR1 = 0.093;
-static double alpha_FWR2 = 0.172;
-static double alpha_FWR3 = 0.107;
-static double alpha_FWR4 = 0.064;
-static double alpha_CDR1 = 0.172;
-static double alpha_CDR2 = 0.159;
-static double alpha_CDR3 = 0.233;
-
+static double alpha_FWR1 = 0.17;
+static double alpha_FWR2 = 0.17;
+static double alpha_FWR3 = 0.29;
+static double alpha_FWR4 = 0.05;
+static double alpha_CDR1 = 0.10;
+static double alpha_CDR2 = 0.03;
+static double alpha_CDR3 = 0.19;
 
 
 static double alpha_FWR = alpha_FWR1 + alpha_FWR2 + alpha_FWR3 +alpha_FWR4;
 
 
 static double beta_FWR1 = 0.73;
-///static double beta_FWR2 = 0.67;
-static double beta_FWR2 = 0.71;
-///static double beta_FWR3 = 0.73;
-static double beta_FWR3 = 0.74;
+static double beta_FWR2 = 0.67;
+static double beta_FWR3 = 0.73;
 static double beta_FWR4  = 0.60;
 static double gamma_CDR1 = 0.79;
 static double gamma_CDR2 = 0.76;
-///static double gamma_CDR3 = 0.75;
-static double gamma_CDR3 = 0.77;
+static double gamma_CDR3 = 0.75;
 
-static double delta = 0.5;
+
+static double delta = 0.5; //0.18
 
 
 static std::map<std::string, double> RATES_OF_MUTATIONS = {

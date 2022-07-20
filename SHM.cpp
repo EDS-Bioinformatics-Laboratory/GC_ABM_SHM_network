@@ -846,12 +846,18 @@ std::vector<int> whichCellsToMutate(int new_n_cells, double lambda) {
     std::vector<int> p;
     static std::random_device rd;
 
-
-    std::poisson_distribution<int> pd(lambda);
-
-    for (int i = 0; i < new_n_cells; ++i){
+    if(std::fabs(lambda - 0.) > std::numeric_limits<double>::epsilon() ) {
+        std::poisson_distribution<int> pd(lambda);
         p.push_back(pd(gen));
+
+    } else {
+        p.push_back(0);
     }
+
+//    for (int i = 0; i < new_n_cells; ++i){
+//        p.push_back(pd(gen));
+//    }
+
 
     return p;
 }
@@ -898,6 +904,7 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
         Replacement = false;
         Lethal=false;
         probRegion= distribution(generator);
+
             if (probRegion <= RATES_OF_MUTATIONS["alpha_FWR"] && !Lethal) {
 
                 if (probRegion <= RATES_OF_MUTATIONS["alpha_FWR1"]) {
@@ -952,7 +959,7 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                 Lethal = true;
             }
               //std::cout<<"igual es a proteina"<<std::endl;
-
+           //cout<<reg<<" "<<Replacement<<" "<< Lethal<< endl;
             REGIONS_TMP= REGIONS;
             Keep_searching=true;
             if (Replacement && !Lethal) { ////////|| (reg == 1 || reg == 3 || reg == 5), tener en cuenta que puede haber stops en los CDR... y ver que se esta adicionando a restricted db neutral
@@ -990,7 +997,6 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
 
                       if(AA_REGIONS_TMP[regions[reg]].compare(AA_REGIONS[regions[reg]])!= 0) {
                           if (std::find(regiones_F.begin(), regiones_F.end(), regions[reg]) != regiones_F.end()) {
-
                               int confirmar=0;
                               int position_AA;
                               for (unsigned li = 0; li < AA_REGIONS[regions[reg]].size(); li++ ) {
@@ -1012,10 +1018,9 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
 
                               if ( Restricted_db[sequence_name][regions[reg]][MutationPlace].find(AA) != Restricted_db[sequence_name][regions[reg]][MutationPlace].end() ) {
                                   if (Restricted_db[sequence_name][regions[reg]][MutationPlace][AA].compare("Lethal") != 0) {
-
                                               if (FWRs_db.find({regions[reg], AA_REGIONS_TMP[regions[reg]]})!= FWRs_db.end() ) {
                                                   if (FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}].compare("N")!= 0 && FWRs_db[{regions[reg], AA_REGIONS[regions[reg]]}].compare("N")== 0 && num_of_mutations == 1) {
-                                                      cout << "Error with FWRS! 3 "  << regions[reg] << " " << AA_REGIONS_TMP[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] << " " << AA_REGIONS[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS[regions[reg]]}] << endl;
+                                                      //cout << "Error with FWRS! 3 "  << regions[reg] << " " << AA_REGIONS_TMP[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] << " " << AA_REGIONS[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS[regions[reg]]}] << endl;
                                                   }
 
                                               } else { /////Y si es R no L en una zona L de un FWR?
@@ -1030,17 +1035,26 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                                                               num_L++;
                                                           }
                                                       }
+
                                                       AA_mother=AA_REGIONS[regions[reg]][position_AA];
                                                       if (num_L==1 && Restricted_db[sequence_name][regions[reg]][position_AA][AA_mother].compare("Lethal") == 0){
                                                           FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="N";
                                                       } else {
                                                           FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="L";
+                                                          Restricted_db[sequence_name][regions[reg]][MutationPlace][AA]= "Neutral";
+                                                          Restricted_is_OK=true;
+//                                                          cout << "OK1" <<endl;
                                                       }
 
                                                   }
 
                                               }
-                                              Restricted_is_OK=true;
+                                            if (FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}].compare("N")!= 0 && FWRs_db[{regions[reg], AA_REGIONS[regions[reg]]}].compare("N")== 0 && num_of_mutations == 1) {
+                                                Restricted_is_OK=false;
+                                            } else {
+                                                Restricted_is_OK=true;
+                                            }
+
 
                                   } else {
                                       Restricted_is_OK=false;
@@ -1050,7 +1064,7 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                                   if(AA.compare(".")!= 0){
                                       if (FWRs_db.find({regions[reg], AA_REGIONS_TMP[regions[reg]]})!= FWRs_db.end() ) {
                                           if (FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}].compare("N")!= 0) {
-                                              cout << "Error with FWRS! 2 " << regions[reg] << " " << AA_REGIONS_TMP[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] << endl;
+                                              //cout << "Error with FWRS! 2 " << regions[reg] << " " << AA_REGIONS_TMP[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] << endl;
                                           }
                                       } else { /////Y si es R no L en una zona L de un FWR?
                                           if (FWRs_db[{regions[reg], AA_REGIONS[regions[reg]]}].compare("N")==0) {
@@ -1064,20 +1078,32 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                                                       num_L++;
                                                   }
                                               }
+
+
                                               AA_mother=AA_REGIONS[regions[reg]][position_AA];
                                               if (num_L==1 && Restricted_db[sequence_name][regions[reg]][position_AA][AA_mother].compare("Lethal") == 0){
                                                   FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="N";
                                               } else {
                                                   FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="L";
+                                                  Restricted_db[sequence_name][regions[reg]][MutationPlace][AA]= "Neutral";
+                                                  Restricted_is_OK=true;
+//                                                  cout << "OK2" <<endl;
                                               }
 
                                           }
                                       }
-                                      Restricted_db[sequence_name][regions[reg]][MutationPlace][AA]= "Neutral";
-                                      Restricted_is_OK=true;
-                                      if (Restricted_db[sequence_name][regions[reg]][MutationPlace][AA].compare("")==0) {
-                                          cout << "FALLO2"<<endl;
-                                      }
+                                    if (FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}].compare("N")== 0) {
+                                        Restricted_db[sequence_name][regions[reg]][MutationPlace][AA]= "Neutral";
+                                        Restricted_is_OK=true;
+                                    } else if (FWRs_db[{regions[reg], AA_REGIONS[regions[reg]]}].compare("L")== 0 && FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}].compare("L")== 0 && Restricted_db[sequence_name][regions[reg]][MutationPlace][AA].compare("Neutral")== 0){
+                                        Restricted_is_OK=true;
+                                    } else {
+                                        Restricted_db[sequence_name][regions[reg]][MutationPlace][AA]= "Lethal";
+                                        Restricted_is_OK=false;
+                                    }
+                                    if (Restricted_db[sequence_name][regions[reg]][MutationPlace][AA].compare("")==0) {
+                                        cout << "FALLO2"<<endl;
+                                    }
                                   } else {
                                       if (FWRs_db.find({regions[reg], AA_REGIONS_TMP[regions[reg]]})!= FWRs_db.end() ) {
                                           if (FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}].compare("L")!= 0) {
@@ -1154,7 +1180,7 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                       int RandIndex = random::randomInteger(4);
                       if (arrayNucleotides[RandIndex] != REGIONS[regions[reg]][mutationPlace]) {
                           REGIONS_TMP[regions[reg]][mutationPlace] = arrayNucleotides[RandIndex];
-                          mutatedSeq=REGIONS_TMP["FWR1"] +REGIONS["CDR1"] +REGIONS_TMP["FWR2"] +REGIONS_TMP["CDR2"] +REGIONS_TMP["FWR3"]  +REGIONS_TMP["CDR3"] +REGIONS_TMP["FWR4"];
+                          mutatedSeq=REGIONS_TMP["FWR1"] +REGIONS_TMP["CDR1"] +REGIONS_TMP["FWR2"] +REGIONS_TMP["CDR2"] +REGIONS_TMP["FWR3"]  +REGIONS_TMP["CDR3"] +REGIONS_TMP["FWR4"];
                       }
                      prueba++;
                 }
@@ -1218,12 +1244,13 @@ void randomMutWhere(int num_of_mutations, std::map<std::string, std::string> & R
                                if ( Restricted_db[sequence_name][regions[reg]][MutationPlace].find(AA) != Restricted_db[sequence_name][regions[reg]][MutationPlace].end() ) {
 
                                    if (Restricted_db[sequence_name][regions[reg]][MutationPlace][AA].compare("Lethal")== 0) {
-                                               Restricted_is_OK=true;
+
                                                if (FWRs_db.find({regions[reg], AA_REGIONS_TMP[regions[reg]]})!= FWRs_db.end() ) {
                                                    if (FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}].compare("L")== 0) {
                                                        Restricted_is_OK=true;
                                                    } else {
-                                                       cout <<"Error incongruency FWRs "  << regions[reg] << " " << AA_REGIONS_TMP[regions[reg]] << AA_REGIONS[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] << endl;
+                                                       //cout <<"Error incongruency FWRs "  << regions[reg] << " " << AA_REGIONS_TMP[regions[reg]]<< " " << FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] << " "  << AA_REGIONS[regions[reg]] << " " << FWRs_db[{regions[reg], AA_REGIONS[regions[reg]]}] << endl;
+                                                       Restricted_is_OK=false;
                                                    }
                                                } else {
                                                    FWRs_db[{regions[reg], AA_REGIONS_TMP[regions[reg]]}] ="L";

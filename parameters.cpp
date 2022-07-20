@@ -236,14 +236,14 @@ parameters::parameters() {
   names[radius] = "    Lattice Radius (um)    ";
   par[radius] = 160;
   names[rateCBinflow] = "    rate of inflow (cells/hr.)    ";
-  par[rateCBinflow] = 2.0; ////RRR!!!2.0
+  par[rateCBinflow] = 2.0; ////RRR5k!!!2.0
 
   // S
   names[smoothnessStopCBinflow] =
       "    smoothness of stop inflow CB (hr.) (-1 = no)    ";
   par[smoothnessStopCBinflow] = 6;
   names[StartMutation] = "    Start of mutation period  (hr.)    ";
-  par[StartMutation] = 24;
+  par[StartMutation] = 24; ////RRR
 
   // T
   names[timeStopCBinflow] = "    time to stop inflow CB  (hr.)    ";

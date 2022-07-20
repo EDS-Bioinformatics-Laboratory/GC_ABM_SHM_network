@@ -203,9 +203,9 @@ void Werte::inialld() {
    tmin = 0.;
    tmax = 504.;  //Temporary504
    // Start Mutation
-   Start_Mutation = 72.;
+   Start_Mutation = 72.; ///RRRR originally they were at 72. for influx
    Start_Differentiation = 72.;
-   newBCinflux_stop = 72.;
+   newBCinflux_stop = 72.; ///RRRR originally they were at 72.
    // Start Output
    StartOutput = 120.;
 

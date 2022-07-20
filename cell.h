@@ -191,6 +191,7 @@ public:
     bool   Selected_by_TC;
     int total_number_of_divisions;
     double  birth_time;
+    double  depart_time=504;
     double fdc_interaction_time_history;
     int nFDCcontacts; // number of FDC contacts.
     pair<double ,double> Tc_interaction_history;
@@ -237,6 +238,7 @@ public:
     bool can_move;
     int total_number_of_divisions;
     double  birth_time;
+    double  depart_time=504;
     double fdc_interaction_time_history;
     int nFDCcontacts; // number of FDC contacts.
     pair<double ,double> Tc_interaction_history;

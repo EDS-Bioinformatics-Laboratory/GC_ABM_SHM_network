@@ -227,7 +227,7 @@ void output::record_output_time_step(double currentTime, simulation &currentSim,
   // Bcell seq data
   vector<string> fastas_totales;
 
-      for (const auto & entry : std::experimental::filesystem::directory_iterator("/home/rgarcia/Escritorio/NGly_scripts/Fastas")) {
+      for (const auto & entry : std::experimental::filesystem::directory_iterator("/home/rgarcia/Escritorio/NGly_scripts/Control_VJ_GC_model")) { ///RRR5k "/home/rgarcia/Escritorio/NGly_scripts/MariaGC_1000_processed_fastas/Fastas_ABM/Fastas_r"
           if (!entry.path().extension().compare(".fasta")) {
                fastas_totales.push_back(entry.path());
           }
@@ -451,13 +451,13 @@ void output::Plasma_output(double currentTime, simulation &currentSim,
     blk.str(std::string());
 
 
-      fprintf(Plasma_cells_data, "%d,%f,%d,%d,%.16G,%f,%d,%d,%.16G,%d,%f,%f,%f,%d,%d,%s,%s,%s,%s,%s,%s,%s,%s,%f,%s,%s,%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d\n",
+      fprintf(Plasma_cells_data, "%d,%f,%d,%d,%f,%f,%d,%d,%f,%d,%f,%f,%f,%d,%d,%s,%s,%s,%s,%s,%s,%s,%s,%f,%s,%s,%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d\n",
             Plasma->ID, Plasma->birth_time, Plasma->MID,Plasma->cell_state, Plasma->MyAffinity,
             Plasma->retained_Ag, Plasma->total_number_of_divisions,
             Plasma->myBCR.nMutFromGermline, Plasma->delta_Affinity, Plasma->nFDCcontacts,
             Plasma->fdc_interaction_time_history,
             Plasma->Tc_interaction_history.first,
-            Plasma->Tc_interaction_history.second, Plasma->Selected_by_FDC,Plasma->Selected_by_TC,Plasma->germline_name.c_str(), Plasma->sequence.c_str(), Plasma->protein_sequence.c_str(), "Plasma", mapToString(Plasma->MUTATIONS).c_str(), mapToString(Plasma->SILENT_MUTATIONS).c_str(), s.c_str(), st.c_str(),currentTime, mapToString2(Plasma->AA_REGIONS).c_str(), mapToString2(Plasma->REGIONS).c_str(), blks.c_str(),Plasma->BLIMP1,Plasma->BCL6,Plasma->IRF4,Plasma->BLIMP1_0,Plasma->BCL6_0,Plasma->IRF4_0,Plasma->myBCR.BCReceptor[0],Plasma->myBCR.BCReceptor[1],Plasma->myBCR.BCReceptor[2],Plasma->myBCR.BCReceptor[3], Plasma->ORF);  ///RRR added sequence in fprintf (2 changes)
+            Plasma->Tc_interaction_history.second, Plasma->Selected_by_FDC,Plasma->Selected_by_TC,Plasma->germline_name.c_str(), Plasma->sequence.c_str(), Plasma->protein_sequence.c_str(), "Plasma", mapToString(Plasma->MUTATIONS).c_str(), mapToString(Plasma->SILENT_MUTATIONS).c_str(), s.c_str(), st.c_str(),Plasma->depart_time, mapToString2(Plasma->AA_REGIONS).c_str(), mapToString2(Plasma->REGIONS).c_str(), blks.c_str(),Plasma->BLIMP1,Plasma->BCL6,Plasma->IRF4,Plasma->BLIMP1_0,Plasma->BCL6_0,Plasma->IRF4_0,Plasma->myBCR.BCReceptor[0],Plasma->myBCR.BCReceptor[1],Plasma->myBCR.BCReceptor[2],Plasma->myBCR.BCReceptor[3], Plasma->ORF);  ///RRR added sequence in fprintf (2 changes)
   }
   fclose(Plasma_cells_data);  //#Recheck take care of bins in gle file
 
@@ -565,13 +565,13 @@ void output::Memory_output(double currentTime, simulation &currentSim,
     blk.str(std::string());
 
 
-      fprintf(Memory_cells_data, "%d,%f,%d,%d,%.16G,%f,%d,%d,%.16G,%d,%f,%f,%f,%d,%d,%s,%s,%s,%s,%s,%s,%s,%s,%f,%s,%s,%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d\n",
+      fprintf(Memory_cells_data, "%d,%f,%d,%d,%f,%f,%d,%d,%f,%d,%f,%f,%f,%d,%d,%s,%s,%s,%s,%s,%s,%s,%s,%f,%s,%s,%s,%f,%f,%f,%f,%f,%f,%f,%f,%f,%f,%d\n",
             Memory->ID, Memory->birth_time, Memory->MID,Memory->cell_state, Memory->MyAffinity,
             Memory->retained_Ag, Memory->total_number_of_divisions,
             Memory->myBCR.nMutFromGermline, Memory->delta_Affinity, Memory->nFDCcontacts,
             Memory->fdc_interaction_time_history,
             Memory->Tc_interaction_history.first,
-            Memory->Tc_interaction_history.second, Memory->Selected_by_FDC,Memory->Selected_by_TC,Memory->germline_name.c_str(), Memory->sequence.c_str(), Memory->protein_sequence.c_str(), "Memory", mapToString(Memory->MUTATIONS).c_str(), mapToString(Memory->SILENT_MUTATIONS).c_str(), s.c_str(), st.c_str(),currentTime, mapToString2(Memory->AA_REGIONS).c_str(),mapToString2(Memory->REGIONS).c_str(),  blks.c_str(),Memory->BLIMP1,Memory->BCL6,Memory->IRF4,Memory->BLIMP1_0,Memory->BCL6_0,Memory->IRF4_0,Memory->myBCR.BCReceptor[0],Memory->myBCR.BCReceptor[1],Memory->myBCR.BCReceptor[2],Memory->myBCR.BCReceptor[3], Memory->ORF);  ///RRR added sequence in fprintf (2 changes)
+            Memory->Tc_interaction_history.second, Memory->Selected_by_FDC,Memory->Selected_by_TC,Memory->germline_name.c_str(), Memory->sequence.c_str(), Memory->protein_sequence.c_str(), "Memory", mapToString(Memory->MUTATIONS).c_str(), mapToString(Memory->SILENT_MUTATIONS).c_str(), s.c_str(), st.c_str(),Memory->depart_time, mapToString2(Memory->AA_REGIONS).c_str(),mapToString2(Memory->REGIONS).c_str(),  blks.c_str(),Memory->BLIMP1,Memory->BCL6,Memory->IRF4,Memory->BLIMP1_0,Memory->BCL6_0,Memory->IRF4_0,Memory->myBCR.BCReceptor[0],Memory->myBCR.BCReceptor[1],Memory->myBCR.BCReceptor[2],Memory->myBCR.BCReceptor[3], Memory->ORF);  ///RRR added sequence in fprintf (2 changes)
   }
 
 

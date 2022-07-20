@@ -479,6 +479,7 @@ void B_cell::setMyAffinity(parameters& p) {
 
 long double B_cell::mutate(parameters& p) {
     double delta_Affinity = 0;
+    ///int number_of_mutations=whichCellsToMutate(1, (RATES_OF_MUTATIONS["lambda"] + double ((0. - RATES_OF_MUTATIONS["lambda"]) * pow(MyAffinity,1))))[0];
     int number_of_mutations=whichCellsToMutate(1, RATES_OF_MUTATIONS["lambda"])[0];
 
     if (myBCR.BCReceptor[0] == 9 && myBCR.BCReceptor[1] == 9 && myBCR.BCReceptor[2] == 9 && myBCR.BCReceptor[3] == 9 ) {
@@ -486,19 +487,27 @@ long double B_cell::mutate(parameters& p) {
     }
     if(number_of_mutations!=0) {
         long double aff1= myBCR.getMyAffinity4Ag(p);
+        std::string mother_prot= protein_sequence;
+        AA_MOM_REGIONS=AA_REGIONS;
+        MOM_REGIONS=REGIONS;
+        MOM_MUTATIONS = MUTATIONS;
+        MOM_SILENT_MUTATIONS = SILENT_MUTATIONS;
 
         randomMutWhere(number_of_mutations, REGIONS, MUTATIONS, SILENT_MUTATIONS, sequence, protein_sequence, RATES_OF_MUTATIONS, germline_name);
+
         protein_sequence = DNAtoprotein(sequence);
         double testing;
+
         AA_REGIONS=Separating(MUTATIONS, protein_sequence);
         blacklist_nums=Blacklisting(MUTATIONS);
+
         NGly_mutated_sites= NGly_positions(protein_sequence, blacklist_nums, All_NGly_mutated_sites);
 
         if (Seq_affinity.find(protein_sequence) == Seq_affinity.end() && (CDRs_affinity.find({AA_REGIONS["CDR1"],AA_REGIONS["CDR2"],AA_REGIONS["CDR3"]}) == CDRs_affinity.end())) {
-            //cout << "NEW" <<endl;
+
 
             int Delta_Num_Mut=0;
-            std::string mother_prot= DNAtoprotein(sequence_origen);
+
             for( int a = 0; a < mother_prot.length(); a = a + 1) {
                 if (mother_prot[a] != protein_sequence[a] && std::find(blacklist_nums.begin(), blacklist_nums.end(), a) == blacklist_nums.end()){
                     Delta_Num_Mut=Delta_Num_Mut+1;
@@ -516,8 +525,10 @@ long double B_cell::mutate(parameters& p) {
 
             delta_Affinity=myBCR.mutateBCR(p,Delta_Num_Mut,Delta_Num_NGly, AA_REGIONS, AA_GERM_REGIONS,AA_MOM_REGIONS, germline_name);
             testing=delta_Affinity;
+
             confirmBCR(myBCR.BCReceptor,protein_sequence, AA_REGIONS, MID, ID);
         } else {
+
             confirmBCR(myBCR.BCReceptor,protein_sequence, AA_REGIONS, MID, ID);
             testing=myBCR.getMyAffinity4Ag(p)-aff1;
         }
@@ -1048,9 +1059,13 @@ void B_cell::proliferate(parameters& p, lattice& l, double time,
         if (not(asymmetric_division) || not(retained_Ag > 0)) {
           daughter_Bcell->setMyAffinity(p);
           setMyAffinity(p);
+
+
           daughter_Bcell->delta_Affinity = daughter_Bcell->mutate(p);
                      // std::cout<< "1" << std::endl;
                      // std::cout<< protein_sequence << std::endl;
+
+
           delta_Affinity = mutate(p);
 
             ///R-SHM
@@ -1096,7 +1111,7 @@ void B_cell::proliferate(parameters& p, lattice& l, double time,
         daughter_Bcell->retained_Ag = all_ag - retained_Ag;
         ///Elena-network
         //Elena: network: Divide TF levels asymmetrically among daughter cells
-        pitmp = rand() % 2; ////////////////////// DIVIDE TF FULLY ASYMMETRICALLY
+        //pitmp = rand() % 2; ////////////////////// DIVIDE TF FULLY ASYMMETRICALLY
         BCL6 = pitmp*all_bcl6;
         daughter_Bcell->BCL6 = all_bcl6 - BCL6;
         IRF4 = pitmp*all_irf4;

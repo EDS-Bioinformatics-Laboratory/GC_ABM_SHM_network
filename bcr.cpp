@@ -77,12 +77,19 @@ long double BCR::mutateBCR(parameters& p, int Delta_Mut_number, int Delta_NGly_n
         for (unsigned int i=0; i < AA_MOM_REGIONS[regiones_C[zi]].size(); i++) {
             if(AA_MOM_REGIONS[regiones_C[zi]][i] != AA_REGIONS[regiones_C[zi]][i]){
                 diferencias_daughter_mom++;
+//                if (Delta_Mut_number == 3) {
+//                   cout << "Something wrong with Deltas2: " << AA_MOM_REGIONS[regiones_C[zi]][i]<< " vs " << AA_REGIONS[regiones_C[zi]][i]<< endl;
+//                   cout << AA_MOM_REGIONS[regiones_C[zi]] <<  " vs " << AA_REGIONS[regiones_C[zi]]<< endl;
+//                }
             };
         }
     }
 
+
     if (diferencias_daughter_mom != Delta_Mut_number) {
         cout << "Something wrong with Deltas: " << Delta_Mut_number<< " vs " << diferencias_daughter_mom<< endl;
+        cout <<AA_MOM_REGIONS[regiones_C[0]]<< " "  <<AA_MOM_REGIONS[regiones_C[1]]<< " " <<AA_MOM_REGIONS[regiones_C[2]]<< endl;
+        cout <<AA_REGIONS[regiones_C[0]]<< " "  <<AA_REGIONS[regiones_C[1]]<< " " <<AA_REGIONS[regiones_C[2]]<< endl;
     }
 
 
@@ -109,8 +116,10 @@ long double BCR::mutateBCR(parameters& p, int Delta_Mut_number, int Delta_NGly_n
              if(diferencias == (diferencias_mom + Delta_Mut_number)) {
                 num_steps = Delta_Mut_number;
              } else {
+//                 cout << diferencias <<  " vs " << diferencias_mom<< " + " << Delta_Mut_number << " + " << AA_REGIONS["CDR1"] << " + " << AA_REGIONS["CDR2"]<< " + " << AA_REGIONS["CDR3"]<< endl;
                 num_steps = diferencias;
                 BCReceptor=Germ_BCReceptor;
+                nMutFromGermline = 0;
                 //if (diferencias_mom != diferencias) {
                 //    cout <<"Special case!"<<endl;
                 //    cout << "diferencias_mom: " << diferencias_mom<< endl;
